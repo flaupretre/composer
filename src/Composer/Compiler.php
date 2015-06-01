@@ -91,6 +91,7 @@ class Compiler
             $this->addFile($phar, $file);
         }
         $this->addFile($phar, new \SplFileInfo(__DIR__ . '/Autoload/ClassLoader.php'), false);
+        $this->addFile($phar, new \SplFileInfo(__DIR__ . '/Autoload/automap.phk'), false);
 
         $finder = new Finder();
         $finder->files()
@@ -124,12 +125,16 @@ class Compiler
         }
 
         $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/autoload.php'));
+        $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/composer/automap.phk'),false);
         $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/composer/autoload_namespaces.php'));
         $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/composer/autoload_psr4.php'));
         $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/composer/autoload_classmap.php'));
         $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/composer/autoload_real.php'));
         if (file_exists(__DIR__.'/../../vendor/composer/include_paths.php')) {
             $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/composer/include_paths.php'));
+		}
+        if (file_exists(__DIR__.'/../../auto.map')) {
+            $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../auto.map'),false);
         }
         $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/composer/ClassLoader.php'));
         $this->addComposerBin($phar);

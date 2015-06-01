@@ -52,7 +52,7 @@ class ClassLoader
     private $fallbackDirsPsr0 = array();
 
     private $useIncludePath = false;
-    private $classMap = array();
+    private $classMap = 0;
 
     private $classMapAuthoritative = false;
 
@@ -86,15 +86,15 @@ class ClassLoader
     }
 
     /**
-     * @param array $classMap Class to filename map
+     * @param string map path
      */
-    public function addClassMap(array $classMap)
+    public function addClassMap($path)
     {
-        if ($this->classMap) {
-            $this->classMap = array_merge($this->classMap, $classMap);
-        } else {
-            $this->classMap = $classMap;
-        }
+		if (!defined('_AUTOMAP_DISABLE_REGISTER')) {
+			define('_AUTOMAP_DISABLE_REGISTER',true);
+			require(__DIR__.'/Mgr.php');
+		}
+		$this->classMap = \Automap\Mgr::load($path);
     }
 
     /**
@@ -297,6 +297,9 @@ class ClassLoader
      */
     public function loadClass($class)
     {
+		if (\Automap\Mgr::getClass($class,true)) {
+			return true;
+		}
         if ($file = $this->findFile($class)) {
             includeFile($file);
 
@@ -313,17 +316,13 @@ class ClassLoader
      */
     public function findFile($class)
     {
+        if ($this->classMapAuthoritative) {
+            return false;
+        }
+
         // work around for PHP 5.3.0 - 5.3.2 https://bugs.php.net/50731
         if ('\\' == $class[0]) {
             $class = substr($class, 1);
-        }
-
-        // class map lookup
-        if (isset($this->classMap[$class])) {
-            return $this->classMap[$class];
-        }
-        if ($this->classMapAuthoritative) {
-            return false;
         }
 
         $file = $this->findFileWithExtension($class, '.php');
