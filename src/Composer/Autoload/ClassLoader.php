@@ -52,7 +52,6 @@ class ClassLoader
     private $fallbackDirsPsr0 = array();
 
     private $useIncludePath = false;
-    private $classMap = array();
 
     private $classMapAuthoritative = false;
 
@@ -78,23 +77,6 @@ class ClassLoader
     public function getFallbackDirsPsr4()
     {
         return $this->fallbackDirsPsr4;
-    }
-
-    public function getClassMap()
-    {
-        return $this->classMap;
-    }
-
-    /**
-     * @param array $classMap Class to filename map
-     */
-    public function addClassMap(array $classMap)
-    {
-        if ($this->classMap) {
-            $this->classMap = array_merge($this->classMap, $classMap);
-        } else {
-            $this->classMap = $classMap;
-        }
     }
 
     /**
@@ -318,10 +300,6 @@ class ClassLoader
             $class = substr($class, 1);
         }
 
-        // class map lookup
-        if (isset($this->classMap[$class])) {
-            return $this->classMap[$class];
-        }
         if ($this->classMapAuthoritative) {
             return false;
         }
